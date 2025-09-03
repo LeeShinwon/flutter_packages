@@ -87,7 +87,7 @@ public class PlatformViewVideoPlayer extends VideoPlayer {
       return player;
     });
 
-    // return new PlatformViewViㄴdeoPlayer(
+    // return new PlatformViewVideoPlayer(
     //     events,
     //     asset.getMediaItem(),
     //     options,
