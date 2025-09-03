@@ -21,6 +21,7 @@ import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.LoadControl;
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter;
 import androidx.media3.common.TrackSelectionParameters;
+import androidx.media3.common.MimeTypes;
 
 /**
  * A subclass of {@link VideoPlayer} that adds functionality related to platform view as a way of
