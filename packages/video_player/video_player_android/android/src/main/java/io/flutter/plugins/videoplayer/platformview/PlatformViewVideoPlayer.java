@@ -17,6 +17,11 @@ import io.flutter.plugins.videoplayer.VideoPlayerCallbacks;
 import io.flutter.plugins.videoplayer.VideoPlayerOptions;
 import io.flutter.view.TextureRegistry.SurfaceProducer;
 
+import androidx.media3.exoplayer.DefaultLoadControl;
+import androidx.media3.exoplayer.LoadControl;
+import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter;
+import androidx.media3.common.TrackSelectionParameters;
+
 /**
  * A subclass of {@link VideoPlayer} that adds functionality related to platform view as a way of
  * displaying the video in the app.
@@ -46,16 +51,40 @@ public class PlatformViewVideoPlayer extends VideoPlayer {
       @NonNull VideoPlayerCallbacks events,
       @NonNull VideoAsset asset,
       @NonNull VideoPlayerOptions options) {
+
     return new PlatformViewVideoPlayer(
-        events,
-        asset.getMediaItem(),
-        options,
-        () -> {
-          ExoPlayer.Builder builder =
-              new ExoPlayer.Builder(context)
-                  .setMediaSourceFactory(asset.getMediaSourceFactory(context));
-          return builder.build();
-        });
+    events,
+    asset.getMediaItem(),
+    options,
+    () -> {
+      LoadControl loadControl = new DefaultLoadControl.Builder()
+          .setBufferDurationsMs(25_000, 80_000, 1_500, 3_000)
+          .build();
+
+      DefaultBandwidthMeter bandwidthMeter =
+          new DefaultBandwidthMeter.Builder(context)
+              .setInitialBitrateEstimate(8_000_000L)
+              .build();
+
+      ExoPlayer player = new ExoPlayer.Builder(context)
+          .setMediaSourceFactory(asset.getMediaSourceFactory(context))
+          .setLoadControl(loadControl)
+          .setBandwidthMeter(bandwidthMeter)
+          .build();
+
+      return player;
+    });
+
+    // return new PlatformViewVideoPlayer(
+    //     events,
+    //     asset.getMediaItem(),
+    //     options,
+    //     () -> {
+    //       ExoPlayer.Builder builder =
+    //           new ExoPlayer.Builder(context)
+    //               .setMediaSourceFactory(asset.getMediaSourceFactory(context));
+    //       return builder.build();
+    //     });
   }
 
   @NonNull

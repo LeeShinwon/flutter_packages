@@ -18,6 +18,11 @@ import io.flutter.plugins.videoplayer.VideoPlayer;
 import io.flutter.plugins.videoplayer.VideoPlayerCallbacks;
 import io.flutter.plugins.videoplayer.VideoPlayerOptions;
 import io.flutter.view.TextureRegistry.SurfaceProducer;
+import androidx.media3.exoplayer.DefaultLoadControl;
+import androidx.media3.exoplayer.LoadControl;
+import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter;
+import androidx.media3.common.TrackSelectionParameters;
+
 
 /**
  * A subclass of {@link VideoPlayer} that adds functionality related to texture view as a way of
@@ -46,17 +51,48 @@ public final class TextureVideoPlayer extends VideoPlayer implements SurfaceProd
       @NonNull SurfaceProducer surfaceProducer,
       @NonNull VideoAsset asset,
       @NonNull VideoPlayerOptions options) {
-    return new TextureVideoPlayer(
-        events,
-        surfaceProducer,
-        asset.getMediaItem(),
-        options,
-        () -> {
-          ExoPlayer.Builder builder =
-              new ExoPlayer.Builder(context)
-                  .setMediaSourceFactory(asset.getMediaSourceFactory(context));
-          return builder.build();
-        });
+
+        return new TextureVideoPlayer(
+    events,
+    surfaceProducer,
+    asset.getMediaItem(),
+    options,
+    () -> {
+      // ① 버퍼/대역폭 힌트
+      LoadControl loadControl = new DefaultLoadControl.Builder()
+          .setBufferDurationsMs(
+              /*minBufferMs*/ 25_000,
+              /*maxBufferMs*/ 80_000,
+              /*bufferForPlaybackMs*/ 1_500,
+              /*bufferForPlaybackAfterRebufferMs*/ 3_000
+          ).build();
+
+      DefaultBandwidthMeter bandwidthMeter =
+          new DefaultBandwidthMeter.Builder(context)
+              .setInitialBitrateEstimate(8_000_000L) // 8Mbps 시작 가정(6~12Mbps 범위 테스트)
+              .build();
+
+      // ② ExoPlayer 생성 시 주입
+      ExoPlayer player = new ExoPlayer.Builder(context)
+          .setMediaSourceFactory(asset.getMediaSourceFactory(context))
+          .setLoadControl(loadControl)
+          .setBandwidthMeter(bandwidthMeter)
+          .build();
+
+      return player;
+    });
+
+    // return new TextureVideoPlayer(
+    //     events,
+    //     surfaceProducer,
+    //     asset.getMediaItem(),
+    //     options,
+    //     () -> {
+    //       ExoPlayer.Builder builder =
+    //           new ExoPlayer.Builder(context)
+    //               .setMediaSourceFactory(asset.getMediaSourceFactory(context));
+    //       return builder.build();
+    //     });
   }
 
   @VisibleForTesting
