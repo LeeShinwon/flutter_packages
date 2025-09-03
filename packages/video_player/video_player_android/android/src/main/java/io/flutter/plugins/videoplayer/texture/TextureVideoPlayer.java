@@ -79,6 +79,13 @@ public final class TextureVideoPlayer extends VideoPlayer implements SurfaceProd
           .setBandwidthMeter(bandwidthMeter)
           .build();
 
+      player.setTrackSelectionParameters(
+          player.getTrackSelectionParameters()
+              .buildUpon()
+              .setForceHighestSupportedBitrate(true)   // 가능한 최고 화질 우선, 상황 안되면 ABR로 자동 하향
+              .build()
+      );
+
       return player;
     });
 
