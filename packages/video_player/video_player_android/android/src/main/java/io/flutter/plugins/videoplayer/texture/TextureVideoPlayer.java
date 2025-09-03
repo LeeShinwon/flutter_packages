@@ -85,7 +85,7 @@ public final class TextureVideoPlayer extends VideoPlayer implements SurfaceProd
               .buildUpon()
               .setForceHighestSupportedBitrate(true)   // 가능한 최고 화질 우선, 상황 안되면 ABR로 자동 하향
               .setPreferredVideoMimeTypes(
-                MimeTypes.VIDEO_AV1, MimeTypes.VIDEO_H265, MimeTypes.VIDEO_H264
+                MimeTypes.VIDEO_H265, MimeTypes.VIDEO_H264, MimeTypes.VIDEO_AV1
               )
               .build()
       );
