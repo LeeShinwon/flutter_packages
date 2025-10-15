@@ -68,7 +68,11 @@ public abstract class VideoPlayer implements Messages.VideoPlayerInstanceApi {
 
   private static void setAudioAttributes(ExoPlayer exoPlayer, boolean isMixMode) {
     exoPlayer.setAudioAttributes(
-        new AudioAttributes.Builder().setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),
+      new AudioAttributes.Builder()
+        .setUsage(C.USAGE_MEDIA)
+        .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
+        .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_ALL)
+        .build(),
         !isMixMode);
   }
 
